@@ -558,6 +558,16 @@ export const generateWAMessageFromContent = (
 		const participant = quoted.key.fromMe ? userJid : (quoted.participant || quoted.key.participant || quoted.key.remoteJid)
 
 		let quotedMsg = normalizeMessageContent(quoted.message)!
+		
+        // ========== MODIFIKASI DI SINI ==========
+        // Handle pesan viewOnce/ephemeral: Ekstrak konten pesan dalamnya
+        if (quotedMsg.viewOnceMessage || quotedMsg.viewOnceMessageV2) {
+            quotedMsg = quotedMsg.viewOnceMessage.message || quotedMsg.viewOnceMessageV2;
+        } else if (quotedMsg.ephemeralMessage) {
+            quotedMsg = quotedMsg.ephemeralMessage.message;
+        }
+        // ========== END MODIFIKASI ==========		
+		
 		const msgType = getContentType(quotedMsg)!
 		// strip any redundant properties
 		quotedMsg = proto.Message.fromObject({ [msgType]: quotedMsg[msgType] })
